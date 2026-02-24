@@ -109,9 +109,9 @@ Quick reference for selecting the right Postman MCP tool.
 | Tool | Use For | Notes |
 |------|---------|-------|
 | `searchPostmanElements` | Search the Postman API Network | **Public only**, not private workspaces |
-| `getTaggedEntities` | Find entities by tag | |
-| `getCollectionTags` | Get tags on a collection | |
-| `updateCollectionTags` | Set tags on a collection | |
+| `getTaggedEntities` | Find entities by tag | May return 404; **Enterprise plan may be required** |
+| `getCollectionTags` | Get tags on a collection | May return 403; **Enterprise plan may be required** |
+| `updateCollectionTags` | Set tags on a collection | **Enterprise plan may be required** |
 
 ## Monitors
 

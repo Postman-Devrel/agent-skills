@@ -14,11 +14,11 @@ These limitations are documented so they are handled correctly in all workflows.
 
 **Workaround:** Use the default response (lightweight map with `itemRefs`) for discovery and structure. Then make targeted `getCollectionRequest` and `getCollectionResponse` calls for specific endpoints you need detail on.
 
-## getTaggedEntities Returns 404 for Missing Tags
+## Tag Tools May Require Enterprise Plan
 
-`getTaggedEntities` returns a 404 error when the requested tag slug does not exist, rather than returning an empty result set. Tag functionality may also require an Enterprise plan.
+`getTaggedEntities` returns 404 for missing tag slugs (instead of an empty result). `getCollectionTags` returns 403 ("You do not have view permission") on non-Enterprise plans. Both tag-related tools are unreliable for general use.
 
-**Workaround:** Wrap `getTaggedEntities` calls with graceful error handling. If 404, treat as "no results found" and fall back to other discovery methods (`getCollections` with name filter).
+**Workaround:** Do not rely on tag tools for API discovery. Use `getCollections` with name filtering as the primary discovery method. If tag calls fail with 404 or 403, silently fall back to collection-based search.
 
 ## runCollection Returns Aggregate Results Only
 

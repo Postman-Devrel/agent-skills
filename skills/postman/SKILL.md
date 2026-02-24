@@ -163,10 +163,10 @@ Generate typed client code from Postman collections. Reads private API definitio
 
 ### Step 1: Find the API
 
-1. Call `getWorkspaces` to get workspace ID
+1. If workspace ID is known, call `getWorkspace(workspaceId)` to get the full inventory (collections, specs, environments) in one call. Otherwise ask the user which workspace.
 2. Call `getCollections` with `workspace` parameter. Use `name` filter if specified.
 3. If no results in private workspace, fall back to `searchPostmanElements` (public network only)
-4. Call `getCollection` for full detail
+4. Call `getCollection` for the lightweight map (default, no `model` param)
 5. Call `getSpecDefinition` if a linked spec exists (richer type info)
 
 ### Step 2: Understand the API Shape
@@ -233,12 +233,11 @@ Answer natural language questions about available APIs across Postman workspaces
 
 ### Step 1: Search
 
-1. Call `getWorkspaces` to get workspace ID
+1. If workspace ID is known, call `getWorkspace(workspaceId)` directly. Otherwise ask the user.
 2. Call `getCollections` with `workspace` parameter. Use `name` filter to narrow.
 3. If sparse, broaden:
-   - `getTaggedEntities` to find collections by tag
-   - `getWorkspaces` to search across all workspaces
    - `searchPostmanElements` as fallback (public network only, not private workspaces)
+   - Note: `getTaggedEntities` and `getCollectionTags` may return 404/403 on non-Enterprise plans. Do not rely on these for discovery.
 
 ### Step 2: Drill Into Results
 
@@ -277,7 +276,7 @@ Execute Postman collection tests, analyze results, diagnose failures, and sugges
 
 ### Step 1: Find the Collection
 
-1. Call `getWorkspaces` to find the target workspace
+1. If workspace ID is known, call `getWorkspace(workspaceId)` directly. Otherwise ask the user.
 2. Call `getCollections` with `workspace` parameter. Use `name` filter if specified.
 
 ### Step 2: Run Tests
@@ -330,9 +329,9 @@ Spin up a Postman mock server from a collection or spec. Get a working mock URL 
 
 ### Step 1: Find the Source
 
-Call `getWorkspaces` to get workspace ID.
+If workspace ID is known, call `getWorkspace(workspaceId)` directly. Otherwise ask the user.
 
-**From existing collection:** `getCollections` -> select target collection
+**From existing collection:** `getCollections` with workspace ID -> select target collection
 
 **From local spec:** Import first:
 1. `createSpec` with workspace, name, type, files
