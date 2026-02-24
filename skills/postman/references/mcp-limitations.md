@@ -2,6 +2,30 @@
 
 These limitations are documented so they are handled correctly in all workflows.
 
+## getWorkspaces Returns All Workspaces (Large Payload)
+
+`getWorkspaces` with no parameters returns every workspace the user has access to. For large organizations (like Postman's own team), this can be 300KB+ and overflow inline display limits.
+
+**Workaround:** If you already have a workspace ID, use `getWorkspace(workspaceId)` directly. If you need to find a workspace, ask the user for the ID or use `getCollections` with a known workspace ID.
+
+## getCollection Full Model Can Overflow
+
+`getCollection` with `model=full` returns the complete collection including all request bodies, response examples, and test scripts. For large collections (50+ requests with examples), this can exceed 300KB.
+
+**Workaround:** Use the default response (lightweight map with `itemRefs`) for discovery and structure. Then make targeted `getCollectionRequest` and `getCollectionResponse` calls for specific endpoints you need detail on.
+
+## getTaggedEntities Returns 404 for Missing Tags
+
+`getTaggedEntities` returns a 404 error when the requested tag slug does not exist, rather than returning an empty result set. Tag functionality may also require an Enterprise plan.
+
+**Workaround:** Wrap `getTaggedEntities` calls with graceful error handling. If 404, treat as "no results found" and fall back to other discovery methods (`getCollections` with name filter).
+
+## runCollection Returns Aggregate Results Only
+
+`runCollection` returns a high-level summary: total requests, failed requests, total assertions, failed assertions, and duration. It does NOT return per-request results, response bodies, or specific error messages.
+
+**Workaround:** For debugging specific failures, examine individual requests with `getCollectionRequest` (to see test scripts) and `getCollectionResponse` (to see expected responses). The user may need to check the Postman app or set up a monitor for detailed per-request logs.
+
 ## searchPostmanElements is Public-Only
 
 `searchPostmanElements` searches the PUBLIC Postman network only, not the user's private workspaces.

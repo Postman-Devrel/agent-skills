@@ -10,7 +10,7 @@ description: >
   workflows, collection management, or any Postman-related operations.
 metadata:
   author: postman-devrel
-  version: "2.0.0"
+  version: "2.0.1"
 allowed-tools:
   - Bash
   - Read
@@ -24,7 +24,7 @@ allowed-tools:
 
 Full API lifecycle management through the Postman MCP Server. Sync specs, generate code, run tests, create mocks, publish docs, and audit security.
 
-**Version**: 2.0.0
+**Version**: 2.0.1
 **Requires**: Postman MCP Server
 
 ## Prerequisites
@@ -32,6 +32,16 @@ Full API lifecycle management through the Postman MCP Server. Sync specs, genera
 This skill requires the Postman MCP Server to be configured. The MCP server exposes 111+ tools for interacting with Postman workspaces, collections, specs, environments, mocks, monitors, and more.
 
 **Setup check**: Call `getAuthenticatedUser` via MCP. If it succeeds, you're connected. If it fails, walk through Setup below.
+
+## Important: MCP Tool Behavior
+
+Before using the workflows below, be aware of these behaviors:
+
+- **`getWorkspaces` returns ALL workspaces.** For large organizations this can be 300KB+. If you already have a workspace ID, use `getWorkspace(workspaceId)` directly instead.
+- **`getCollection` default response is a lightweight map** with `itemRefs` (folder/request tree). This is efficient for discovery. Only use `model=full` when you need complete request/response bodies, and be aware it can exceed 300KB for large collections. Prefer targeted `getCollectionRequest` and `getCollectionResponse` calls for specific endpoints.
+- **`getTaggedEntities` returns 404 for missing tags**, not an empty array. Handle this gracefully. Tag functionality may require an Enterprise plan.
+- **`runCollection` returns aggregate results only** (total requests, passed, failed, duration). It does NOT return per-request detail or error messages. For debugging specific failures, examine individual requests with `getCollectionRequest` and `getCollectionResponse` after the run.
+- **`searchPostmanElements` only searches the PUBLIC Postman network**, not private workspaces. Always search private workspace first with `getCollections`.
 
 ## Setup
 
@@ -97,7 +107,7 @@ Detect or ask:
 
 ### Step 2: Resolve Workspace
 
-Call `getWorkspaces` to get the user's workspace ID. If multiple exist, ask which to use.
+If the user provides a workspace ID, call `getWorkspace(workspaceId)` directly. Otherwise, call `getCollections` with a workspace ID if known, or ask the user which workspace to use. Avoid calling `getWorkspaces` (no filter) on large org accounts as it returns all workspaces (300KB+).
 
 ### Step 3: Find or Create the Collection
 
@@ -178,6 +188,10 @@ If not specified, detect from the project:
 - `pom.xml` or `build.gradle` -> Java
 - `Gemfile` -> Ruby
 
+### Step 3b: Check for Variable Mismatches
+
+Compare collection variables with environment variables. Common issue: collection uses `{{baseUrl}}` but environment defines `base_url` (or vice versa). Flag any naming mismatches to the user before generating code, as these cause silent failures at runtime.
+
 ### Step 4: Generate Code
 
 Generate a typed client with:
@@ -229,10 +243,10 @@ Answer natural language questions about available APIs across Postman workspaces
 ### Step 2: Drill Into Results
 
 For each relevant hit:
-1. `getCollection` for overview
-2. Scan endpoint names and descriptions
-3. `getCollectionRequest` for relevant endpoints
-4. `getCollectionResponse` for available data
+1. `getCollection` for overview (default returns lightweight map with `itemRefs`, not full payloads)
+2. Scan endpoint names from the map to identify relevant folders/requests
+3. `getCollectionRequest` for specific relevant endpoints (targeted, not bulk)
+4. `getCollectionResponse` for specific response data
 5. `getSpecDefinition` if linked spec exists
 
 ### Step 3: Present
@@ -277,18 +291,17 @@ If environment variables are needed:
 
 ### Step 3: Parse Results
 
+**Note:** `runCollection` returns aggregate results only (total requests, passed/failed counts, duration). It does NOT include per-request detail. Present what's available:
+
 ```
 Test Results: Pet Store API
   Requests:  15 executed
-  Passed:    12 (80%)
   Failed:    3
-  Avg time:  245ms
-
-  Failures:
-  1. POST /users -> "Status code is 201" -> Got 400
-  2. GET /users/{id} -> "Response has email field" -> Missing
-  3. DELETE /users/{id} -> "Status code is 204" -> Got 403
+  Assertions: 24 total, 21 passed
+  Duration:  12.4s
 ```
+
+If tests failed and per-request detail is needed, examine the collection's test scripts and request definitions with `getCollectionRequest` to help diagnose. The user may also need to check the Postman app or a monitor run for detailed failure logs.
 
 ### Step 4: Diagnose Failures
 

@@ -9,7 +9,7 @@ description: >
   Works with local specs and Postman collections via MCP.
 metadata:
   author: postman-devrel
-  version: "2.0.0"
+  version: "2.0.1"
 allowed-tools:
   - Bash
   - Read
@@ -23,7 +23,7 @@ allowed-tools:
 
 Evaluate any API for AI agent compatibility. 48 checks across 8 pillars. Weighted scoring. Actionable fixes.
 
-**Version**: 2.0.0
+**Version**: 2.0.1
 
 ## Role
 
