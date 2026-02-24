@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://voyager.postman.com/logo/postman-logo-orange.svg" alt="Postman" width="320">
+</p>
+
 # Postman Agent Skills
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -9,7 +13,7 @@ Works with **Claude Code**, **Cursor**, **Windsurf**, **Codex**, and [40+ other 
 ## Install
 
 ```bash
-npx skills add Postman-Devrel/postman-skill
+npx skills add Postman-Devrel/agent-skills
 ```
 
 This installs two skills:
