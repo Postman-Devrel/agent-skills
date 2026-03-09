@@ -123,6 +123,12 @@ Built by the [Postman Developer Relations](https://www.postman.com) team. These 
 
 The **postman** skill covers the complete API lifecycle: design, build, test, secure, deploy, observe, and distribute. The **postman-api-readiness** skill is a standalone analyzer that evaluates any OpenAPI spec for AI agent compatibility using a framework of 48 checks across 8 pillars.
 
+## See Also
+
+- [Postman Plugin for Claude Code](https://github.com/Postman-Devrel/postman-claude-code-plugin) - Full plugin with commands, skills, and agents for Claude Code (source of truth)
+- [Postman Plugin for Cursor](https://github.com/Postman-Devrel/cursor-postman-plugin) - Same capabilities, adapted for Cursor IDE
+- [Postman Cursor Rules](https://github.com/Postman-Devrel/postman-cursor-rules) - Lightweight MCP config + rules for Cursor
+
 ## License
 
 MIT
